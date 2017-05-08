@@ -979,7 +979,7 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout imp
 
 		switch (getPullToRefreshScrollDirection()) {
 			case VERTICAL:
-				scrollTo(0, value);
+				scrollTo(0, value);			//scrollTo(int x, int y)
 				break;
 			case HORIZONTAL:
 				scrollTo(value, 0);
