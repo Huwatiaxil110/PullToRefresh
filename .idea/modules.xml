@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/MyLibrary/MyLibrary.iml" filepath="$PROJECT_DIR$/MyLibrary/MyLibrary.iml" />
       <module fileurl="file://$PROJECT_DIR$/PullToRefresh.iml" filepath="$PROJECT_DIR$/PullToRefresh.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/testcanvas/testcanvas.iml" filepath="$PROJECT_DIR$/testcanvas/testcanvas.iml" />
     </modules>
   </component>
 </project>

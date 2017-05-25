@@ -19,10 +19,18 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -35,6 +43,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.handmark.pulltorefresh.library.FSView1;
 import com.handmark.pulltorefresh.library.ILoadingLayout;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Orientation;
@@ -56,6 +65,7 @@ public abstract class LoadingLayout extends FrameLayout implements ILoadingLayou
 
 	private final TextView mHeaderText;
 	private final TextView mSubHeaderText;
+	FSView1 ivLoading;
 
 	protected final Mode mMode;
 	protected final Orientation mScrollDirection;
@@ -66,6 +76,9 @@ public abstract class LoadingLayout extends FrameLayout implements ILoadingLayou
 
 	public LoadingLayout(Context context, final Mode mode, final Orientation scrollDirection, TypedArray attrs) {
 		super(context);
+
+		initNeed();
+
 		mMode = mode;
 		mScrollDirection = scrollDirection;
 
@@ -84,6 +97,7 @@ public abstract class LoadingLayout extends FrameLayout implements ILoadingLayou
 		mHeaderProgress = (ProgressBar) mInnerLayout.findViewById(R.id.pull_to_refresh_progress);
 		mSubHeaderText = (TextView) mInnerLayout.findViewById(R.id.pull_to_refresh_sub_text);
 		mHeaderImage = (ImageView) mInnerLayout.findViewById(R.id.pull_to_refresh_image);
+		ivLoading = (FSView1) mInnerLayout.findViewById(R.id.iv_loading);
 
 		LayoutParams lp = (LayoutParams) mInnerLayout.getLayoutParams();
 
@@ -247,6 +261,9 @@ public abstract class LoadingLayout extends FrameLayout implements ILoadingLayou
 		if (null != mSubHeaderText) {
 			mSubHeaderText.setVisibility(View.GONE);
 		}
+
+		// TODO: 2017/5/25  
+		ivLoading.startTurn();
 	}
 
 	public final void releaseToRefresh() {
@@ -389,5 +406,68 @@ public abstract class LoadingLayout extends FrameLayout implements ILoadingLayou
 			mSubHeaderText.setTextColor(color);
 		}
 	}
+
+	// TODO: 2017/5/10
+	// TODO: 2017/5/10
+	/*********************************************************************************/
+	private static final String TAG = LoadingLayout.class.getSimpleName();
+	Paint mPaint;
+	float anchorX, anchorY;
+	int drawY;
+	Matrix matrix;
+//	Bitmap bitmap;
+
+	private void initNeed(){
+		setBackgroundColor(Color.GRAY);
+
+		mPaint = new Paint();
+		mPaint.setStrokeWidth(10);
+		mPaint.setColor(Color.BLACK);
+		mPaint.setAntiAlias(true);
+		mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+
+		matrix = new Matrix();
+//		bitmap = ((BitmapDrawable) getResources().getDrawable(R.drawable.loading_panda)).getBitmap();
+	}
+
+	@Override
+	protected void onDraw(Canvas canvas) {
+		super.onDraw(canvas);
+
+		canvas.save();
+
+
+
+		canvas.drawPath(getPath(), mPaint);
+	}
+
+	private Path getPath(){
+		Path mPath = new Path();
+		mPath.reset();
+		anchorX = getWidth()/2;
+		anchorY = getHeight() - drawY - 30;
+		Log.e("TAG", "LoadingLayout: (width, height) = (" + getWidth()+ ", " +getHeight()+ ")");
+		Log.e("TAG", "Innerlayout: (width, height) = (" + mInnerLayout.getWidth()+ ", " +mInnerLayout.getHeight()+ ")");
+		Log.e("TAG", "drawY = " + drawY);
+		mPath.moveTo(0, getHeight() + drawY);
+		mPath.quadTo(anchorX, anchorY, getWidth(), getHeight() + drawY);
+
+		return mPath;
+	}
+
+	public void setDrawY(int drawY){
+		this.drawY = drawY;
+//		rotateImg();
+		ivLoading.turnDegress(drawY);
+		invalidate();
+	}
+
+//	private void rotateImg(){
+//		// 设置旋转角度
+//		matrix.setRotate(drawY);
+//		// 重新绘制Bitmap
+//		bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),bitmap.getHeight(), matrix, true);
+//		ivLoading.setImageBitmap(bitmap);
+//	}
 
 }

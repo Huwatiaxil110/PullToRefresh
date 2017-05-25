@@ -18,7 +18,13 @@ package com.handmark.pulltorefresh.samples;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.ScrollView;
+import android.widget.SimpleAdapter;
+import android.widget.Toast;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
@@ -28,6 +34,9 @@ public final class PullToRefreshScrollViewActivity extends Activity {
 
 	PullToRefreshScrollView mPullRefreshScrollView;
 	ScrollView mScrollView;
+	ListViewForScrollView lvShow;
+	String[] contents = {"Hello0", "Hello1", "Hello2", "Hello3"};
+	TestAdapter mAdapter;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -45,6 +54,16 @@ public final class PullToRefreshScrollViewActivity extends Activity {
 		});
 
 		mScrollView = mPullRefreshScrollView.getRefreshableView();
+
+		lvShow = (ListViewForScrollView) findViewById(R.id.lv_data);
+		mAdapter = new TestAdapter(this);
+		lvShow.setAdapter(mAdapter);
+		lvShow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				Toast.makeText(PullToRefreshScrollViewActivity.this, contents[position%contents.length], Toast.LENGTH_SHORT).show();
+			}
+		});
 	}
 
 	private class GetDataTask extends AsyncTask<Void, Void, String[]> {
@@ -65,6 +84,7 @@ public final class PullToRefreshScrollViewActivity extends Activity {
 
 			// Call onRefreshComplete when the list has been refreshed.
 			mPullRefreshScrollView.onRefreshComplete();
+			mAdapter.addOne();
 
 			super.onPostExecute(result);
 		}

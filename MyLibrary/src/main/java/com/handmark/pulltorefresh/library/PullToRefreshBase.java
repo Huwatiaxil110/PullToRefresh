@@ -588,7 +588,6 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout imp
 		LoadingLayout layout = mLoadingAnimationStyle.createLoadingLayout(context, mode,
 				getPullToRefreshScrollDirection(), attrs);
 		layout.setVisibility(View.INVISIBLE);
-		layout.setBackgroundResource(R.drawable.test);
 		return layout;
 	}
 
@@ -980,6 +979,10 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout imp
 		switch (getPullToRefreshScrollDirection()) {
 			case VERTICAL:
 				scrollTo(0, value);			//scrollTo(int x, int y)
+				Log.e("TAG", "value = " + value);
+				// TODO: 2017/5/10
+//				mHeaderLayout.invalidate();
+				mHeaderLayout.setDrawY(value);
 				break;
 			case HORIZONTAL:
 				scrollTo(value, 0);

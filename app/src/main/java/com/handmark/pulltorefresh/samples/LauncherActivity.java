@@ -68,4 +68,5 @@ public class LauncherActivity extends ListActivity {
 		startActivity(intent);
 	}
 
+
 }
