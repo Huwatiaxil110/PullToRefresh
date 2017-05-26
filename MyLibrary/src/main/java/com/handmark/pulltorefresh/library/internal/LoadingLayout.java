@@ -247,6 +247,7 @@ public abstract class LoadingLayout extends FrameLayout implements ILoadingLayou
 	}
 
 	public final void refreshing() {
+		Log.e(TAG, "=== refreshing ===");
 		if (null != mHeaderText) {
 			mHeaderText.setText(mRefreshingLabel);
 		}
@@ -261,10 +262,8 @@ public abstract class LoadingLayout extends FrameLayout implements ILoadingLayou
 		if (null != mSubHeaderText) {
 			mSubHeaderText.setVisibility(View.GONE);
 		}
-
-		// TODO: 2017/5/25  
-		ivLoading.startTurn();
 	}
+	boolean isTurn = true;
 
 	public final void releaseToRefresh() {
 		if (null != mHeaderText) {
@@ -407,8 +406,6 @@ public abstract class LoadingLayout extends FrameLayout implements ILoadingLayou
 		}
 	}
 
-	// TODO: 2017/5/10
-	// TODO: 2017/5/10
 	/*********************************************************************************/
 	private static final String TAG = LoadingLayout.class.getSimpleName();
 	Paint mPaint;
@@ -446,28 +443,26 @@ public abstract class LoadingLayout extends FrameLayout implements ILoadingLayou
 		mPath.reset();
 		anchorX = getWidth()/2;
 		anchorY = getHeight() - drawY - 30;
-		Log.e("TAG", "LoadingLayout: (width, height) = (" + getWidth()+ ", " +getHeight()+ ")");
-		Log.e("TAG", "Innerlayout: (width, height) = (" + mInnerLayout.getWidth()+ ", " +mInnerLayout.getHeight()+ ")");
-		Log.e("TAG", "drawY = " + drawY);
-		mPath.moveTo(0, getHeight() + drawY);
-		mPath.quadTo(anchorX, anchorY, getWidth(), getHeight() + drawY);
+//		Log.e("TAG", "LoadingLayout: (width, height) = (" + getWidth()+ ", " +getHeight()+ ")");
+//		Log.e("TAG", "Innerlayout: (width, height) = (" + mInnerLayout.getWidth()+ ", " +mInnerLayout.getHeight()+ ")");
+//		Log.e("TAG", "drawY = " + drawY);
+		mPath.moveTo(0, getHeight() + drawY - 5);	//防白条抖-5
+		mPath.quadTo(anchorX, anchorY, getWidth(), getHeight() + drawY - 5);	//防白条抖-5
 
 		return mPath;
 	}
 
 	public void setDrawY(int drawY){
 		this.drawY = drawY;
-//		rotateImg();
-		ivLoading.turnDegress(drawY);
-		invalidate();
+		postInvalidate();
 	}
 
-//	private void rotateImg(){
-//		// 设置旋转角度
-//		matrix.setRotate(drawY);
-//		// 重新绘制Bitmap
-//		bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),bitmap.getHeight(), matrix, true);
-//		ivLoading.setImageBitmap(bitmap);
-//	}
+	public void turnDegress(float degress){
+		ivLoading.turnDegress(degress*2);
+	}
+
+	public void setCircleTurn(boolean circleTurn) {
+		ivLoading.setCircleTurn(circleTurn);
+	}
 
 }

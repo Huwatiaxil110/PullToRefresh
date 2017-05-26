@@ -554,7 +554,11 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout imp
 				onReleaseToRefresh();
 				break;
 			case REFRESHING:
+				Log.e("PullToRefreshBase", "=== REFRESHING ===");
+				onRefreshing(params[0]);
+				break;
 			case MANUAL_REFRESHING:
+				Log.e("PullToRefreshBase", "=== MANUAL_REFRESHING ===");
 				onRefreshing(params[0]);
 				break;
 			case OVERSCROLLING:
@@ -751,6 +755,8 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout imp
 						break;
 					default:
 					case PULL_FROM_START:
+						isTurning = true;
+						mHeaderLayout.setCircleTurn(isTurning);
 						smoothScrollTo(-getHeaderSize(), listener);
 						break;
 				}
@@ -788,6 +794,9 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout imp
 	protected void onReset() {
 		mIsBeingDragged = false;
 		mLayoutVisibilityChangesEnabled = true;
+
+		isTurning = false;
+		mHeaderLayout.setCircleTurn(isTurning);
 
 		// Always reset both layouts, just in case...
 		mHeaderLayout.reset();
@@ -980,15 +989,20 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout imp
 			case VERTICAL:
 				scrollTo(0, value);			//scrollTo(int x, int y)
 				Log.e("TAG", "value = " + value);
-				// TODO: 2017/5/10
-//				mHeaderLayout.invalidate();
-				mHeaderLayout.setDrawY(value);
+				if(isTurning){
+					mHeaderLayout.setDrawY(value);
+				}else{
+					mHeaderLayout.setDrawY(value);
+					mHeaderLayout.turnDegress(value);
+				}
+
 				break;
 			case HORIZONTAL:
 				scrollTo(value, 0);
 				break;
 		}
 	}
+	boolean isTurning = false;
 
 	/**
 	 * Smooth Scroll to position using the default duration of

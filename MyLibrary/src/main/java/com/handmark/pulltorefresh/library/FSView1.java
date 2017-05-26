@@ -8,7 +8,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.os.Handler;
+import android.os.Message;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 
@@ -20,15 +23,27 @@ import android.view.View;
  */
 public class FSView1 extends View{
     private static final String TAG = FSView1.class.getSimpleName();
+    private static final int MSG_UPDATE_DELAY = 0x13;
     Context mContext;
     Paint mPaint;
     Bitmap mBitmap;
     float rotate;
-    boolean isCircleTurn = true;
-    float degree = 20;
-    long delayTime = 30;
+    boolean isCircleTurn = false;
+    float degree = 18;
+    long delayTime = 20;
     float viewWidth, viewHeight;
     int picID;
+
+    Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case MSG_UPDATE_DELAY:
+                    postInvalidate();
+                    break;
+            }
+        }
+    };
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -62,7 +77,9 @@ public class FSView1 extends View{
 
         if(isCircleTurn){
             rotate = rotate + degree;
-            postInvalidateDelayed(delayTime);
+            if(!mHandler.hasMessages(MSG_UPDATE_DELAY)){
+                mHandler.sendEmptyMessageDelayed(MSG_UPDATE_DELAY, delayTime);
+            }
         }
     }
 
@@ -85,9 +102,17 @@ public class FSView1 extends View{
 
     /** 转动角度 */
     public void turnDegress(float rotate){
-        this.rotate = rotate;
-        isCircleTurn = false;
-        postInvalidate();
+        if(!isCircleTurn){
+            this.rotate = rotate;
+            postInvalidate();
+        }
+    }
+
+    public void setCircleTurn(boolean circleTurn) {
+        isCircleTurn = circleTurn;
+        if(isCircleTurn){
+            postInvalidate();
+        }
     }
 
     /** 初始化画笔 */
@@ -154,53 +179,4 @@ public class FSView1 extends View{
         }
     }
 
-
-//    private final Camera camera = new Camera();
-//    @Override
-//    void drawItems(Canvas canvas) {
-//        for (int i = -view.itemIndex; i < view.data.size() - view.itemIndex; i++) {
-//            int curUnit = unit * i;
-//            curUnit += (unitTotalMove + degreeSingleMove);
-//            if (curUnit > unitDisplayMax || curUnit < unitDisplayMin) {
-//                continue;
-//            }
-//            int space = WheelUtil.calculateSpace(curUnit, radius);
-//            if (space == 0) curUnit = 1;
-//            int depth = WheelUtil.calculateDepth(curUnit, radius);
-//
-//            canvas.save();
-//
-//            camera.save();
-//            camera.rotateX(-curUnit/2);
-//            camera.getMatrix(matrixRotate);
-//            camera.restore();
-//
-//            matrixRotate.preTranslate(-centerX, -(centerY + space));
-//            matrixRotate.postTranslate(centerX, centerY + space);
-//
-//            camera.save();
-//            camera.translate(0, 0, 3*depth);
-//            camera.getMatrix(matrixDepth);
-//            camera.restore();
-//
-//            matrixDepth.preTranslate(-centerX, -(centerY + space));
-//            matrixDepth.postTranslate(centerX, centerY + space);
-//
-//            matrixRotate.postConcat(matrixDepth);
-//
-//            canvas.concat(matrixRotate);
-//            canvas.concat(matrixDepth);
-//
-////            Log.e("TAG", "curUnit = "+curUnit);
-////            Log.e("TAG", "unitDisplayMax = "+unitDisplayMax);
-//
-//            paint.setAlpha(255 - 255 * Math.abs(curUnit) / unitDisplayMax);
-////            paint.setTextSize(view.textSize * (1-(Math.abs(curUnit)/30*0.2f)));
-//            canvas.drawText(view.data.get(i + view.itemIndex), centerX,
-//                    centerTextY + space, paint);
-//
-//
-//            canvas.restore();
-//        }
-//    }
 }
