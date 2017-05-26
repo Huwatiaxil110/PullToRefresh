@@ -26,10 +26,4 @@
         android:text="Button1"
         android:textColor="#ffffff"/>
 
-    <com.testcanvas.fsview.FSView1
-        android:id="@+id/fsview1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/button1"
-        android:background="#bbbbbb"/>
 </RelativeLayout>
